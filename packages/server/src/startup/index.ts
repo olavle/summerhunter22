@@ -96,6 +96,7 @@ export const start: FNStart = function () {
         graphqlHTTP({
           schema,
           rootValue: createResolvers(ctx),
+          graphiql: true,
         }),
       );
 

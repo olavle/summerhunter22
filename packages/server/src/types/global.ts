@@ -8,7 +8,15 @@ export type AppConfig = {
 };
 
 export type Character = {
+  id: string;
   name: string;
+  description: string;
+  age: number;
+  happiness: number;
+  hunger: number;
+  energy: number;
+  health: number;
+  ownerId: string;
 };
 
 export type Handler<Args extends unknown, ReturnValue extends unknown> = (
@@ -23,4 +31,9 @@ export type Context = {
     config: AppConfig;
   };
   handlers: typeof handlerTree;
+};
+
+export type User = {
+  userId: string;
+  userName: string;
 };

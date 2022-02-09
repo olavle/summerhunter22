@@ -1,15 +1,33 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { gql, useQuery } from 'urql';
 import styled from 'styled-components';
 
 import { BabyPorcu, Frame } from '../../assets';
 import { Character } from '../../components/Character';
 import { Screen } from '../../components/Screen';
+import { CharacterActions } from '../../components/CharacterActions';
+import useAttributes from '../../hooks/useAttributes';
+import { ICharacterInfo } from '../../types/global';
+import { Login } from '../../components/Login';
+import { Register } from '../../components/Register';
+import { useStateValue } from '../../state/state';
+import { postQuery } from '../../helpers/fetchHelper';
+import { setLoggedInUser, setLoginTrue } from '../../state/reducer';
+import { userFromLocalStorage } from '../../helpers/common';
+import { GameScreen } from '../../components/GameScreen';
 
 const query = gql`
   query GetCharacters {
     characters {
+      id
       name
+      description
+      age
+      happiness
+      hunger
+      energy
+      health
+      ownerId
     }
   }
 `;
@@ -26,28 +44,36 @@ const StyledHome = styled.div`
 
 export const Home: React.FC = () => {
   // TODO: proper types, maybe shared with backend
-  const [result] = useQuery<{ characters: { name: string }[] }>({ query });
+  const [{ userSpecificCharacters, isLoggedIn }, dispatch] = useStateValue();
+  const [result] = useQuery<{ characters: ICharacterInfo[] }>({
+    query,
+  });
 
   if (result.fetching) {
-    return <>TODO: handle loading</>;
+    return (
+      <StyledHome>
+        <h1>Loading data...</h1>
+      </StyledHome>
+    );
   }
 
   if (!result.data) {
-    return <>TODO: handle no data</>;
+    return (
+      <StyledHome>
+        <h1>Oops, didn't find any data</h1>
+      </StyledHome>
+    );
   }
 
   return (
-    <StyledHome>
-      <Screen>
-        {result.data.characters.map((character, i) => (
-          <Character
-            key={i}
-            name={character.name}
-            characterImage={<BabyPorcu />}
-          />
-        ))}
-      </Screen>
-      <Frame />
-    </StyledHome>
+    <div>
+      <Login />
+      <Register />
+      <GameScreen
+        characters={
+          !isLoggedIn ? result.data.characters : userSpecificCharacters
+        }
+      />
+    </div>
   );
 };
