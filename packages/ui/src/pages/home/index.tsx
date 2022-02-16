@@ -64,9 +64,19 @@ const StyledHome = styled.div`
   background-color: #e5fbff;
 `;
 
+const CharacterSection = styled.div`
+  display: flex;
+`;
+
+const CharacterName = styled.div`
+  padding: 10px;
+  cursor: pointer;
+`;
+
 export const Home: React.FC = () => {
   // TODO: proper types, maybe shared with backend
-  const [{ userSpecificCharacters }, dispatch] = useStateValue();
+  const [{ userSpecificCharacters, isLoggedIn, loggedInUser }, dispatch] =
+    useStateValue();
   const [characters, setCharacters] = useState<ICharacterInfo[]>([]);
   const [characterName, setCharacterName] = useState('');
   const [characterDesc, setCharacterDesc] = useState('');
@@ -100,18 +110,40 @@ export const Home: React.FC = () => {
   };
 
   const handleSave = () => {
-    console.log('hello from save');
-    setCharacters([
-      {
-        age: 0,
-        description: characterDesc,
-        energy: 10,
-        happiness: 10,
-        health: 10,
-        hunger: 10,
-        name: characterName,
-      },
-    ]);
+    if (!isLoggedIn) {
+      setCharacters([
+        {
+          age: 0,
+          description: characterDesc,
+          energy: 10,
+          happiness: 10,
+          health: 10,
+          hunger: 10,
+          name: characterName,
+        },
+      ]);
+      setCharacterDesc('');
+      setCharacterName('');
+      return;
+    }
+    const userFromStorage = userFromLocalStorage();
+    dispatch(
+      setUserSpecificCharacters(
+        userSpecificCharacters.concat({
+          age: 0,
+          description: characterDesc,
+          energy: 10,
+          happiness: 10,
+          health: 10,
+          hunger: 10,
+          name: characterName,
+          ownerId: userFromStorage?.userId,
+        }),
+      ),
+    );
+    setCharacterDesc('');
+    setCharacterName('');
+    console.log('Added a user specific character:', userSpecificCharacters);
   };
 
   if (characters.length === 0 && !userSpecificCharacters) {
@@ -130,17 +162,35 @@ export const Home: React.FC = () => {
     <div>
       <Login />
       <Register />
-      {!userSpecificCharacters
-        ? characters.map((character, i) => (
-            <div key={i} onClick={() => setChosenCharacter(character)}>
-              {character.name}
-            </div>
-          ))
-        : userSpecificCharacters.map((character, i) => (
-            <div key={i} onClick={() => setChosenCharacter(character)}>
-              {character.name}
-            </div>
-          ))}
+      <h1>Create Character</h1>
+      <label>Character name:</label>
+      <input
+        value={characterName}
+        type='text'
+        onChange={handleCharacterNameChange}
+      />
+      <label>Character description:</label>
+      <input value={characterDesc} type='text' onChange={handleDescChange} />
+      <button onClick={handleSave}>Save</button>
+      <CharacterSection>
+        {!userSpecificCharacters
+          ? characters.map((character, i) => (
+              <CharacterName
+                key={i}
+                onClick={() => setChosenCharacter(character)}
+              >
+                {character.name}
+              </CharacterName>
+            ))
+          : userSpecificCharacters.map((character, i) => (
+              <CharacterName
+                key={i}
+                onClick={() => setChosenCharacter(character)}
+              >
+                {character.name}
+              </CharacterName>
+            ))}
+      </CharacterSection>
       <StyledHome>
         <Screen>
           {!chosenCharacter ? null : (
@@ -151,6 +201,7 @@ export const Home: React.FC = () => {
               description={chosenCharacter.description}
               happiness={chosenCharacter.happiness}
               id={chosenCharacter.id}
+              ownerId={chosenCharacter.ownerId}
               characterImage={<BabyPorcu />}
             />
           )}
