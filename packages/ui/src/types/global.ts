@@ -4,7 +4,7 @@ export interface User {
 }
 
 export interface ICharacterInfo {
-  id: string;
+  id?: string;
   name: string;
   description: string;
   age: number;
@@ -12,5 +12,5 @@ export interface ICharacterInfo {
   hunger: number;
   energy: number;
   health: number;
-  ownerId: string;
+  ownerId?: string;
 }

@@ -148,7 +148,7 @@ export interface ICharacterProps {
   hunger: number;
   description: string;
   id?: string;
-  ownerId: string;
+  ownerId?: string;
 }
 
 export const Character: FC<ICharacterProps> = ({
@@ -206,7 +206,21 @@ export const Character: FC<ICharacterProps> = ({
   };
 
   const saveCharacter = async () => {
-    const saveResult = await postQuery({
+    // const saveResult = await postQuery({
+    //   query: saveQuery,
+    //   variables: {
+    //     id: restProps.id,
+    //     name: name,
+    //     age: attributes.age,
+    //     description: 'restProps.description',
+    //     energy: attributes.energy,
+    //     happiness: attributes.happiness,
+    //     health: attributes.health,
+    //     hunger: attributes.hunger,
+    //     ownerId: restProps.ownerId,
+    //   },
+    // });
+    await postQuery({
       query: saveQuery,
       variables: {
         id: restProps.id,

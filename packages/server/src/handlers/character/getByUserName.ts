@@ -17,6 +17,7 @@ export const getByUserName: Handler<string, Character[] | Error> = (
         if (err) {
           reject(err);
         }
+        console.log('Resolved with result:', result);
         resolve(result);
       },
     );

@@ -33,14 +33,29 @@ export const GameScreen: React.FC<IProps> = ({ characters }) => {
     setCharacterDesc(event.target.value);
   };
 
-  if (!characters) {
+  const handleCharacterCreate = () => {
+    characters = [
+      {
+        age: 0,
+        description: characterDesc,
+        energy: 10,
+        happiness: 10,
+        health: 10,
+        hunger: 10,
+        name: characterName,
+      },
+    ];
+  };
+
+  if (characters.length === 0) {
     return (
       <div>
+        <label>Name: </label>
+        <input onChange={handleNameChange} />
+        <label>Description: </label>
+        <input onChange={handleDescChange} />
+        <button onClick={handleCharacterCreate}>Save character!</button>
         <StyledHome>
-          <label>Name: </label>
-          <input onChange={handleNameChange} />
-          <label>Description: </label>
-          <input onChange={handleDescChange} />
           <Screen>
             <Character
               name={characterName}
@@ -70,7 +85,6 @@ export const GameScreen: React.FC<IProps> = ({ characters }) => {
             description={character.description}
             happiness={character.happiness}
             id={character.id}
-            ownerId={character.ownerId}
             characterImage={<BabyPorcu />}
           />
         ))}

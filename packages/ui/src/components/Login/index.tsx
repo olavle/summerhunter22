@@ -79,6 +79,7 @@ export const Login: React.FC = () => {
       query: characterQuery,
       variables: { userName },
     });
+    console.log('userCharactersResult:', userCharactersResult);
     if (!userCharactersResult.errors) {
       dispatch(
         setUserSpecificCharacters(
